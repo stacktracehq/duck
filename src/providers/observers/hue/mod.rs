@@ -73,9 +73,9 @@ impl<T: HttpClient + Default> Observer for HueObserver<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use reqwest::StatusCode;
     use crate::builds::BuildStatus;
     use crate::utils::http::MockHttpClient;
+    use reqwest::StatusCode;
 
     #[test]
     fn should_post_to_correct_url() {
@@ -160,13 +160,11 @@ mod tests {
         });
 
         let client = hue.get_client();
-        client.add_expectation(
-            MockHttpClientExpectationBuilder::new(
-                HttpMethod::Put,
-                "https://example.com/api/patrik/lights/foo/state",
-                StatusCode::BAD_GATEWAY
-            )
-        );
+        client.add_expectation(MockHttpClientExpectationBuilder::new(
+            HttpMethod::Put,
+            "https://example.com/api/patrik/lights/foo/state",
+            StatusCode::BAD_GATEWAY,
+        ));
 
         // When, Then
         hue.observe(Observation::DuckStatusChanged(BuildStatus::Success))

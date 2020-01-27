@@ -233,7 +233,8 @@ mod tests {
             .unwrap();
 
         // When, Then
-        slack.observe(Observation::DuckStatusChanged(BuildStatus::Success))
+        slack
+            .observe(Observation::DuckStatusChanged(BuildStatus::Success))
             .unwrap();
     }
 }

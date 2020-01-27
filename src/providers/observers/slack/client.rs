@@ -1,6 +1,6 @@
 use crate::config::{SlackConfiguration, SlackCredentials};
+use crate::utils::http::{HttpClient, HttpRequestBuilder, HttpResponse};
 use crate::utils::DuckResult;
-use crate::utils::http::{HttpClient, HttpResponse, HttpRequestBuilder};
 
 pub struct SlackClient {
     credentials: SlackCredentials,
@@ -36,7 +36,10 @@ impl SlackClient {
 
         let response = client.send(&builder)?;
         if !response.status().is_success() {
-            return Err(format_err!("Could not send Slack message ({})", response.status()));
+            return Err(format_err!(
+                "Could not send Slack message ({})",
+                response.status()
+            ));
         }
 
         Ok(())

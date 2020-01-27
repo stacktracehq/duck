@@ -193,7 +193,7 @@ pub struct MockHttpClientExpectationBuilder {
 
 #[cfg(test)]
 impl MockHttpClientExpectationBuilder {
-    pub fn new<T : Into<String>>(method: HttpMethod, url: T, status: StatusCode) -> Self {
+    pub fn new<T: Into<String>>(method: HttpMethod, url: T, status: StatusCode) -> Self {
         Self {
             url: url.into(),
             method,
@@ -203,12 +203,12 @@ impl MockHttpClientExpectationBuilder {
 
     pub fn build(self) -> DuckResult<MockHttpClientExpectation> {
         if self.status.is_none() {
-            return Err(format_err!("Status is not setup for expectation."))
+            return Err(format_err!("Status is not setup for expectation."));
         }
         Ok(MockHttpClientExpectation {
             url: self.url,
             method: self.method,
-            status: self.status.unwrap()
+            status: self.status.unwrap(),
         })
     }
 }

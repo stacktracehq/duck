@@ -2,7 +2,7 @@ use url::Url;
 
 use crate::builds::BuildStatus;
 use crate::config::HueConfiguration;
-use crate::utils::http::{HttpClient, HttpResponse, HttpRequestBuilder};
+use crate::utils::http::{HttpClient, HttpRequestBuilder, HttpResponse};
 use crate::utils::{colors::Rgb, DuckResult};
 
 pub struct HueClient {
@@ -75,9 +75,11 @@ impl HueClient {
 
             let response = client.send(&builder)?;
             if !response.status().is_success() {
-                return Err(format_err!("Could not update state for light '{id}' ({status})", 
+                return Err(format_err!(
+                    "Could not update state for light '{id}' ({status})",
                     id = light,
-                    status = response.status()));
+                    status = response.status()
+                ));
             }
         }
 
