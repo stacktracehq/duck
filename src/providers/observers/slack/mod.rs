@@ -6,7 +6,7 @@ use log::info;
 use crate::builds::BuildStatus;
 use crate::config::SlackConfiguration;
 use crate::providers::observers::{Observation, Observer, ObserverInfo};
-use crate::utils::http::*;
+use crate::utils::http::HttpClient;
 use crate::utils::DuckResult;
 
 use self::client::SlackClient;
@@ -94,7 +94,7 @@ mod tests {
     use super::*;
     use crate::builds::{Build, BuildProvider, BuildStatus};
     use crate::config::SlackCredentials;
-    use crate::utils::http::MockHttpClient;
+    use crate::utils::http::{MockHttpClient, HttpMethod, MockHttpClientExpectationBuilder};
     use reqwest::StatusCode;
 
     #[test]

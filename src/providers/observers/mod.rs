@@ -76,7 +76,7 @@ impl<'a> DuckProvider<'a> for MattermostProvider {
             for item in observers.iter() {
                 if let ObserverConfiguration::Mattermost(c) = item {
                     c.validate()?;
-                    result.push(Box::new(MattermostObserver::new(&c)));
+                    result.push(Box::new(MattermostObserver::<ReqwestClient>::new(&c)));
                 }
             }
         }

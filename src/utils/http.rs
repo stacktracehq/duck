@@ -13,6 +13,7 @@ pub trait HttpClient: Send + Sync {
 
 #[derive(Clone, PartialEq, Debug)]
 pub enum HttpMethod {
+    Post,
     Put,
 }
 
@@ -37,6 +38,10 @@ impl HttpRequestBuilder {
             body: None,
             headers: HashMap::new(),
         }
+    }
+
+    pub fn post(url: String) -> Self {
+        HttpRequestBuilder::new(HttpMethod::Post, url)
     }
 
     pub fn put(url: String) -> Self {
@@ -85,8 +90,7 @@ impl HttpClient for ReqwestClient {
 
     fn send(&self, request: &HttpRequestBuilder) -> DuckResult<Response> {
         let mut builder = match &request.method {
-            // HttpMethod::Get => self.client.get(&request.url[..]),
-            // HttpMethod::Post => self.client.post(&request.url[..]),
+            HttpMethod::Post => self.client.post(&request.url[..]),
             HttpMethod::Put => self.client.put(&request.url[..]),
         };
 
