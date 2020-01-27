@@ -5,7 +5,7 @@ use log::info;
 
 use crate::config::HueConfiguration;
 use crate::providers::observers::{Observation, Observer, ObserverInfo};
-use crate::utils::http::*;
+use crate::utils::http::HttpClient;
 use crate::utils::DuckResult;
 
 use self::client::HueClient;
@@ -74,7 +74,7 @@ impl<T: HttpClient + Default> Observer for HueObserver<T> {
 mod tests {
     use super::*;
     use crate::builds::BuildStatus;
-    use crate::utils::http::MockHttpClient;
+    use crate::utils::http::{HttpMethod, MockHttpClient, MockHttpClientExpectationBuilder};
     use reqwest::StatusCode;
 
     #[test]
