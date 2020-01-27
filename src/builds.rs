@@ -2,7 +2,7 @@ use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 
 #[derive(Clone, Builder, Debug, PartialEq, Eq)]
-#[builder(build_fn(skip), setter(into), pattern = "immutable")] // TODO: Should not be immutable
+#[builder(field(private), build_fn(skip), setter(into), pattern = "immutable")] // TODO: Should not be immutable
 pub struct Build {
     #[builder(setter(skip))]
     pub id: u64,
