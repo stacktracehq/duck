@@ -92,7 +92,7 @@ fn is_interesting_status(status: &BuildStatus) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::builds::{Build, BuildProvider, BuildStatus};
+    use crate::builds::{BuildBuilder, BuildStatus};
     use crate::config::SlackCredentials;
     use crate::utils::http::{HttpMethod, MockHttpClient, MockHttpClientExpectationBuilder};
     use reqwest::StatusCode;
@@ -120,21 +120,9 @@ mod tests {
 
         // When
         slack
-            .observe(Observation::BuildStatusChanged(&Build::new(
-                "build_id".to_string(),
-                BuildProvider::TeamCity,
-                "collector".to_string(),
-                "project_id".to_string(),
-                "project".to_string(),
-                "definition_id".to_string(),
-                "definition".to_string(),
-                "build_number".to_string(),
-                BuildStatus::Success,
-                "branch".to_string(),
-                "https://example.com/url".to_string(),
-                "".to_string(),
-                Option::None,
-            )))
+            .observe(Observation::BuildStatusChanged(
+                &BuildBuilder::dummy().unwrap(),
+            ))
             .unwrap();
 
         // Then
@@ -144,8 +132,8 @@ mod tests {
         assert_eq!("https://example.com/webhook", &requests[0].url);
     }
 
-    #[test_case(BuildStatus::Success, "{\"icon_emoji\":\":heavy_check_mark:\",\"text\":\"TeamCity build status for project::definition (branch) changed to *Success*\",\"username\":\"Duck\"}" ; "Success")]
-    #[test_case(BuildStatus::Failed, "{\"icon_emoji\":\":heavy_multiplication_x:\",\"text\":\"TeamCity build status for project::definition (branch) changed to *Failed*\",\"username\":\"Duck\"}" ; "Failed")]
+    #[test_case(BuildStatus::Success, "{\"icon_emoji\":\":heavy_check_mark:\",\"text\":\"TeamCity build status for project_name::definition_name (branch) changed to *Success*\",\"username\":\"Duck\"}" ; "Success")]
+    #[test_case(BuildStatus::Failed, "{\"icon_emoji\":\":heavy_multiplication_x:\",\"text\":\"TeamCity build status for project_name::definition_name (branch) changed to *Failed*\",\"username\":\"Duck\"}" ; "Failed")]
     fn should_send_correct_payload(status: BuildStatus, expected: &str) {
         // Given
         let slack = SlackObserver::<MockHttpClient>::new(&SlackConfiguration {
@@ -167,21 +155,9 @@ mod tests {
 
         // When
         slack
-            .observe(Observation::BuildStatusChanged(&Build::new(
-                "build_id".to_string(),
-                BuildProvider::TeamCity,
-                "collector".to_string(),
-                "project_id".to_string(),
-                "project".to_string(),
-                "definition_id".to_string(),
-                "definition".to_string(),
-                "build_number".to_string(),
-                status,
-                "branch".to_string(),
-                "https://example.com/url".to_string(),
-                "".to_string(),
-                Option::None,
-            )))
+            .observe(Observation::BuildStatusChanged(
+                &BuildBuilder::dummy().status(status).unwrap(),
+            ))
             .unwrap();
 
         // Then
@@ -214,21 +190,9 @@ mod tests {
 
         // When
         slack
-            .observe(Observation::BuildStatusChanged(&Build::new(
-                "build_id".to_string(),
-                BuildProvider::TeamCity,
-                "collector".to_string(),
-                "project_id".to_string(),
-                "project".to_string(),
-                "definition_id".to_string(),
-                "definition".to_string(),
-                "build_number".to_string(),
-                BuildStatus::Success,
-                "branch".to_string(),
-                "https://example.com/url".to_string(),
-                "".to_string(),
-                Option::None,
-            )))
+            .observe(Observation::BuildStatusChanged(
+                &BuildBuilder::dummy().unwrap(),
+            ))
             .unwrap();
 
         // When, Then

@@ -80,7 +80,7 @@ impl<T: HttpClient + Default> Observer for MattermostObserver<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::builds::{Build, BuildProvider, BuildStatus};
+    use crate::builds::{BuildBuilder, BuildStatus};
     use crate::config::MattermostCredentials;
     use crate::utils::http::{HttpMethod, MockHttpClient, MockHttpClientExpectationBuilder};
     use reqwest::StatusCode;
@@ -108,21 +108,9 @@ mod tests {
 
         // When
         mattermost
-            .observe(Observation::BuildStatusChanged(&Build::new(
-                "build_id".to_string(),
-                BuildProvider::TeamCity,
-                "collector".to_string(),
-                "project_id".to_string(),
-                "project".to_string(),
-                "definition_id".to_string(),
-                "definition".to_string(),
-                "build_number".to_string(),
-                BuildStatus::Success,
-                "branch".to_string(),
-                "https://example.com/url".to_string(),
-                "".to_string(),
-                Option::None,
-            )))
+            .observe(Observation::BuildStatusChanged(
+                &BuildBuilder::dummy().unwrap(),
+            ))
             .unwrap();
 
         // Then
@@ -132,8 +120,8 @@ mod tests {
         assert_eq!("https://example.com/webhook", &requests[0].url);
     }
 
-    #[test_case(BuildStatus::Success, "{\"text\":\"TeamCity build status for project::definition (branch) changed to *Success*\"}" ; "Success")]
-    #[test_case(BuildStatus::Failed, "{\"text\":\"TeamCity build status for project::definition (branch) changed to *Failed*\"}" ; "Failed")]
+    #[test_case(BuildStatus::Success, "{\"text\":\"TeamCity build status for project_name::definition_name (branch) changed to *Success*\"}" ; "Success")]
+    #[test_case(BuildStatus::Failed, "{\"text\":\"TeamCity build status for project_name::definition_name (branch) changed to *Failed*\"}" ; "Failed")]
     fn should_send_correct_payload(status: BuildStatus, expected: &str) {
         // Given
         let mattermost = MattermostObserver::<MockHttpClient>::new(&MattermostConfiguration {
@@ -155,21 +143,9 @@ mod tests {
 
         // When
         mattermost
-            .observe(Observation::BuildStatusChanged(&Build::new(
-                "build_id".to_string(),
-                BuildProvider::TeamCity,
-                "collector".to_string(),
-                "project_id".to_string(),
-                "project".to_string(),
-                "definition_id".to_string(),
-                "definition".to_string(),
-                "build_number".to_string(),
-                status,
-                "branch".to_string(),
-                "https://example.com/url".to_string(),
-                "".to_string(),
-                Option::None,
-            )))
+            .observe(Observation::BuildStatusChanged(
+                &BuildBuilder::dummy().status(status).unwrap(),
+            ))
             .unwrap();
 
         // Then
@@ -201,21 +177,9 @@ mod tests {
 
         // When
         mattermost
-            .observe(Observation::BuildStatusChanged(&Build::new(
-                "build_id".to_string(),
-                BuildProvider::TeamCity,
-                "collector".to_string(),
-                "project_id".to_string(),
-                "project".to_string(),
-                "definition_id".to_string(),
-                "definition".to_string(),
-                "build_number".to_string(),
-                BuildStatus::Success,
-                "branch".to_string(),
-                "https://example.com/url".to_string(),
-                "".to_string(),
-                Option::None,
-            )))
+            .observe(Observation::BuildStatusChanged(
+                &BuildBuilder::dummy().status(BuildStatus::Success).unwrap(),
+            ))
             .unwrap();
 
         // Then
@@ -223,7 +187,7 @@ mod tests {
         assert_eq!(1, requests.len());
         assert!(&requests[0].body.is_some());
         assert_eq!(
-            "{\"channel_id\":\"foo\",\"text\":\"TeamCity build status for project::definition (branch) changed to *Success*\"}",
+            "{\"channel_id\":\"foo\",\"text\":\"TeamCity build status for project_name::definition_name (branch) changed to *Success*\"}",
             &requests[0].body.clone().unwrap()
         );
     }
