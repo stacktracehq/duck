@@ -55,7 +55,6 @@ impl Collector for AzureDevOpsCollector {
 
             let builds = self.client.get_builds(branch, &self.definitions)?;
             for build in builds.value.iter() {
-
                 callback(
                     BuildBuilder::new()
                         .build_id(build.id.to_string())
@@ -68,12 +67,16 @@ impl Collector for AzureDevOpsCollector {
                         .build_number(&build.build_number)
                         .status(build.get_build_status())
                         .url(&build.links.web.href)
-                        .started_at(date::to_iso8601(&build.start_time, date::AZURE_DEVOPS_FORMAT)?)
+                        .started_at(date::to_iso8601(
+                            &build.start_time,
+                            date::AZURE_DEVOPS_FORMAT,
+                        )?)
                         .finished_at(match &build.finish_time {
                             Option::None => None,
-                            Option::Some(value) => {
-                                Option::Some(date::to_iso8601(&value[..], date::AZURE_DEVOPS_FORMAT)?)
-                            }
+                            Option::Some(value) => Option::Some(date::to_iso8601(
+                                &value[..],
+                                date::AZURE_DEVOPS_FORMAT,
+                            )?),
                         })
                         .branch(&build.branch)
                         .build()
