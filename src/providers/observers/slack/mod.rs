@@ -16,8 +16,8 @@ mod validation;
 
 pub struct SlackObserver<T: HttpClient + Default> {
     client: SlackClient,
-    info: ObserverInfo,
     http: T,
+    info: ObserverInfo,
 }
 
 impl<T: HttpClient + Default> SlackObserver<T> {
@@ -94,7 +94,7 @@ mod tests {
     use super::*;
     use crate::builds::{Build, BuildProvider, BuildStatus};
     use crate::config::SlackCredentials;
-    use crate::utils::http::{MockHttpClient, HttpMethod, MockHttpClientExpectationBuilder};
+    use crate::utils::http::{HttpMethod, MockHttpClient, MockHttpClientExpectationBuilder};
     use reqwest::StatusCode;
 
     #[test]

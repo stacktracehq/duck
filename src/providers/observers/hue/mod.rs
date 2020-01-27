@@ -14,16 +14,16 @@ mod client;
 mod validation;
 
 pub struct HueObserver<T: HttpClient + Default> {
-    broker: HueClient,
-    client: T,
+    client: HueClient,
+    http: T,
     info: ObserverInfo,
 }
 
 impl<T: HttpClient + Default> HueObserver<T> {
     pub fn new(config: &HueConfiguration) -> Self {
         HueObserver {
-            broker: HueClient::new(config),
-            client: Default::default(),
+            client: HueClient::new(config),
+            http: Default::default(),
             info: ObserverInfo {
                 id: config.id.clone(),
                 enabled: match config.enabled {
@@ -42,7 +42,7 @@ impl<T: HttpClient + Default> HueObserver<T> {
 
     #[cfg(test)]
     pub fn get_client(&self) -> &T {
-        &self.client
+        &self.http
     }
 }
 
@@ -58,11 +58,11 @@ impl<T: HttpClient + Default> Observer for HueObserver<T> {
                     "[{}] Setting light state to '{:?}'...",
                     self.info.id, status
                 );
-                self.broker.set_state(&self.client, status)?;
+                self.client.set_state(&self.http, status)?;
             }
             Observation::ShuttingDown => {
                 info!("[{}] Turning off all lights...", self.info.id);
-                self.broker.turn_off(&self.client)?;
+                self.client.turn_off(&self.http)?;
             }
             _ => {}
         }
