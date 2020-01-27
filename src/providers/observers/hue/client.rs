@@ -2,7 +2,7 @@ use url::Url;
 
 use crate::builds::BuildStatus;
 use crate::config::HueConfiguration;
-use crate::utils::http::*;
+use crate::utils::http::{HttpClient, HttpResponse, HttpRequestBuilder};
 use crate::utils::{colors::Rgb, DuckResult};
 
 pub struct HueClient {

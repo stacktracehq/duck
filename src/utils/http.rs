@@ -114,42 +114,6 @@ pub struct MockHttpClient {
 }
 
 #[cfg(test)]
-pub struct MockHttpClientExpectation {
-    pub url: String,
-    pub method: HttpMethod,
-    pub status: StatusCode,
-}
-
-#[cfg(test)]
-pub struct MockHttpClientExpectationBuilder {
-    pub url: String,
-    pub method: HttpMethod,
-    pub status: Option<StatusCode>,
-}
-
-#[cfg(test)]
-impl MockHttpClientExpectationBuilder {
-    pub fn new<T : Into<String>>(method: HttpMethod, url: T, status: StatusCode) -> Self {
-        Self {
-            url: url.into(),
-            method,
-            status: Some(status),
-        }
-    }
-
-    pub fn build(self) -> DuckResult<MockHttpClientExpectation> {
-        if self.status.is_none() {
-            return Err(format_err!("Status is not setup for expectation."))
-        }
-        Ok(MockHttpClientExpectation {
-            url: self.url,
-            method: self.method,
-            status: self.status.unwrap()
-        })
-    }
-}
-
-#[cfg(test)]
 impl Default for MockHttpClient {
     fn default() -> Self {
         MockHttpClient::new()
@@ -209,6 +173,42 @@ impl HttpClient for MockHttpClient {
         let expecation = expecation.unwrap();
         Ok(MockHttpResponse {
             status: expecation.status,
+        })
+    }
+}
+
+#[cfg(test)]
+pub struct MockHttpClientExpectation {
+    pub url: String,
+    pub method: HttpMethod,
+    pub status: StatusCode,
+}
+
+#[cfg(test)]
+pub struct MockHttpClientExpectationBuilder {
+    pub url: String,
+    pub method: HttpMethod,
+    pub status: Option<StatusCode>,
+}
+
+#[cfg(test)]
+impl MockHttpClientExpectationBuilder {
+    pub fn new<T : Into<String>>(method: HttpMethod, url: T, status: StatusCode) -> Self {
+        Self {
+            url: url.into(),
+            method,
+            status: Some(status),
+        }
+    }
+
+    pub fn build(self) -> DuckResult<MockHttpClientExpectation> {
+        if self.status.is_none() {
+            return Err(format_err!("Status is not setup for expectation."))
+        }
+        Ok(MockHttpClientExpectation {
+            url: self.url,
+            method: self.method,
+            status: self.status.unwrap()
         })
     }
 }

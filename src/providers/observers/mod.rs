@@ -92,7 +92,7 @@ impl<'a> DuckProvider<'a> for SlackProvider {
             for item in observers.iter() {
                 if let ObserverConfiguration::Slack(c) = item {
                     c.validate()?;
-                    result.push(Box::new(SlackObserver::new(&c)));
+                    result.push(Box::new(SlackObserver::<ReqwestClient>::new(&c)));
                 }
             }
         }
