@@ -76,6 +76,7 @@ mod tests {
     use crate::builds::BuildStatus;
     use crate::utils::http::{HttpMethod, MockHttpClient, MockHttpClientExpectationBuilder};
     use reqwest::StatusCode;
+    use test_case::test_case;
 
     #[test]
     fn should_post_to_correct_url() {
@@ -111,8 +112,10 @@ mod tests {
         );
     }
 
-    #[test]
-    fn should_send_correct_payload() {
+    #[test_case(BuildStatus::Success, "{\"alert\":\"none\",\"xy\":[0.32114217,0.59787315],\"on\":true,\"bri\":255}" ; "Success")]
+    #[test_case(BuildStatus::Failed, "{\"alert\":\"select\",\"xy\":[0.64842725,0.3308561],\"on\":true,\"bri\":255}" ; "Failed")]
+    #[test_case(BuildStatus::Running, "{\"alert\":\"none\",\"xy\":[0.29151475,0.33772817],\"on\":true,\"bri\":255}" ; "Running")]
+    fn should_send_correct_payload(status: BuildStatus, expected: &str) {
         // Given
         let hue = HueObserver::<MockHttpClient>::new(&HueConfiguration {
             id: "hue".to_string(),
@@ -132,17 +135,13 @@ mod tests {
         ));
 
         // When
-        hue.observe(Observation::DuckStatusChanged(BuildStatus::Success))
-            .unwrap();
+        hue.observe(Observation::DuckStatusChanged(status)).unwrap();
 
         // Then
         let requests = client.get_sent_requests();
         assert_eq!(1, requests.len());
         assert!(&requests[0].body.is_some());
-        assert_eq!(
-            "{\"alert\":\"none\",\"xy\":[0.32114217,0.59787315],\"on\":true,\"bri\":255}",
-            &requests[0].body.clone().unwrap()
-        );
+        assert_eq!(expected, &requests[0].body.clone().unwrap());
     }
 
     #[test]

@@ -96,6 +96,7 @@ mod tests {
     use crate::config::SlackCredentials;
     use crate::utils::http::{HttpMethod, MockHttpClient, MockHttpClientExpectationBuilder};
     use reqwest::StatusCode;
+    use test_case::test_case;
 
     #[test]
     fn should_post_to_webhook_url() {
@@ -143,8 +144,9 @@ mod tests {
         assert_eq!("https://example.com/webhook", &requests[0].url);
     }
 
-    #[test]
-    fn should_send_correct_payload() {
+    #[test_case(BuildStatus::Success, "{\"icon_emoji\":\":heavy_check_mark:\",\"text\":\"TeamCity build status for project::definition (branch) changed to *Success*\",\"username\":\"Duck\"}" ; "Success")]
+    #[test_case(BuildStatus::Failed, "{\"icon_emoji\":\":heavy_multiplication_x:\",\"text\":\"TeamCity build status for project::definition (branch) changed to *Failed*\",\"username\":\"Duck\"}" ; "Failed")]
+    fn should_send_correct_payload(status: BuildStatus, expected: &str) {
         // Given
         let slack = SlackObserver::<MockHttpClient>::new(&SlackConfiguration {
             id: "hue".to_string(),
@@ -174,7 +176,7 @@ mod tests {
                 "definition_id".to_string(),
                 "definition".to_string(),
                 "build_number".to_string(),
-                BuildStatus::Success,
+                status,
                 "branch".to_string(),
                 "https://example.com/url".to_string(),
                 "".to_string(),
@@ -186,10 +188,7 @@ mod tests {
         let requests = client.get_sent_requests();
         assert_eq!(1, requests.len());
         assert!(&requests[0].body.is_some());
-        assert_eq!(
-            "{\"icon_emoji\":\":heavy_check_mark:\",\"text\":\"TeamCity build status for project::definition (branch) changed to *Success*\",\"username\":\"Duck\"}",
-            &requests[0].body.clone().unwrap()
-        );
+        assert_eq!(expected, &requests[0].body.clone().unwrap());
     }
 
     #[test]
