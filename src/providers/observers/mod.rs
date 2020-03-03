@@ -10,6 +10,7 @@ use self::mattermost::MattermostObserver;
 use self::slack::SlackObserver;
 
 use super::DuckProvider;
+use crate::providers::observers::mqtt::MqttObserver;
 
 mod hue;
 mod mattermost;
@@ -107,9 +108,9 @@ impl<'a> DuckProvider<'a> for MqttProvider {
         let mut result = Vec::<Box<dyn Observer>>::new();
         if let Some(observers) = &config.observers {
             for item in observers.iter() {
-                if let ObserverConfiguration::Slack(c) = item {
-                    c.validate()?;
-                    result.push(Box::new(SlackObserver::<ReqwestClient>::new(&c)));
+                if let ObserverConfiguration::MQTT(c) = item {
+                    //c.validate()?;
+                    result.push(Box::new(MqttObserver::new(&c)));
                 }
             }
         }

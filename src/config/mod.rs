@@ -299,7 +299,7 @@ impl ObserverConfiguration {
             ObserverConfiguration::Hue(c) => c.enabled,
             ObserverConfiguration::Slack(c) => c.enabled,
             ObserverConfiguration::Mattermost(c) => c.enabled,
-            ObserverConfiguration::MQTT(c) => c.enabled
+            ObserverConfiguration::MQTT(c) => c.enabled,
         } {
             return enabled;
         }
@@ -397,11 +397,12 @@ pub struct MQTTConfiguration {
     #[serde(default)]
     pub collectors: Option<Vec<String>>,
     /// # The URL of the MQTT broker
-    pub broker_url: String,
+    pub broker: MQTTBrokerEndpoint,
     /// # The name of the topic to publish to
     pub topic: String,
 }
 
+#[derive(Serialize, Deserialize, JsonSchema, Clone)]
 pub struct MQTTBrokerEndpoint {
     pub hostname: String,
     pub port: u16,
