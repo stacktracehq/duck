@@ -5,3 +5,6 @@
 # Configuration
 config.json
 data/
+
+# CLion
+.idea/
