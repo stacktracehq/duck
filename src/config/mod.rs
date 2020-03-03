@@ -91,6 +91,7 @@ impl Configuration {
                         ObserverConfiguration::Hue(c) => result.push(c.id.clone()),
                         ObserverConfiguration::Slack(c) => result.push(c.id.clone()),
                         ObserverConfiguration::Mattermost(c) => result.push(c.id.clone()),
+                        ObserverConfiguration::MQTT(c) => result.push(c.id.clone()),
                     };
                 }
             }
@@ -278,6 +279,9 @@ pub enum ObserverConfiguration {
     /// # Mattermost observer
     #[serde(rename = "mattermost")]
     Mattermost(MattermostConfiguration),
+    /// # MQTT observer
+    #[serde(rename = "mqtt")]
+    MQTT(MQTTConfiguration),
 }
 
 impl ObserverConfiguration {
@@ -286,6 +290,7 @@ impl ObserverConfiguration {
             ObserverConfiguration::Hue(c) => &c.id,
             ObserverConfiguration::Slack(c) => &c.id,
             ObserverConfiguration::Mattermost(c) => &c.id,
+            ObserverConfiguration::MQTT(c) => &c.id,
         }
     }
 
@@ -294,6 +299,7 @@ impl ObserverConfiguration {
             ObserverConfiguration::Hue(c) => c.enabled,
             ObserverConfiguration::Slack(c) => c.enabled,
             ObserverConfiguration::Mattermost(c) => c.enabled,
+            ObserverConfiguration::MQTT(c) => c.enabled
         } {
             return enabled;
         }
@@ -305,6 +311,7 @@ impl ObserverConfiguration {
             ObserverConfiguration::Hue(c) => c.collectors.clone(),
             ObserverConfiguration::Slack(c) => c.collectors.clone(),
             ObserverConfiguration::Mattermost(c) => c.collectors.clone(),
+            ObserverConfiguration::MQTT(c) => c.collectors.clone(),
         }
     }
 }
@@ -378,4 +385,24 @@ pub enum MattermostCredentials {
     /// Send messages directly to a webhook
     #[serde(rename = "webhook")]
     Webhook { url: String },
+}
+
+#[derive(Serialize, Deserialize, JsonSchema, Clone)]
+pub struct MQTTConfiguration {
+    pub id: String,
+    /// # Determines whether or not this collector is enabled
+    #[serde(default)]
+    pub enabled: Option<bool>,
+    /// # The collectors to include events from
+    #[serde(default)]
+    pub collectors: Option<Vec<String>>,
+    /// # The URL of the MQTT broker
+    pub broker_url: String,
+    /// # The name of the topic to publish to
+    pub topic: String,
+}
+
+pub struct MQTTBrokerEndpoint {
+    pub hostname: String,
+    pub port: u16,
 }

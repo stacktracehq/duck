@@ -13,6 +13,7 @@ use super::DuckProvider;
 
 mod hue;
 mod mattermost;
+mod mqtt;
 mod slack;
 
 pub trait Observer: Send {
@@ -86,6 +87,22 @@ impl<'a> DuckProvider<'a> for MattermostProvider {
 
 pub struct SlackProvider {}
 impl<'a> DuckProvider<'a> for SlackProvider {
+    fn get_observers(&self, config: &Configuration) -> DuckResult<Vec<Box<dyn Observer>>> {
+        let mut result = Vec::<Box<dyn Observer>>::new();
+        if let Some(observers) = &config.observers {
+            for item in observers.iter() {
+                if let ObserverConfiguration::Slack(c) = item {
+                    c.validate()?;
+                    result.push(Box::new(SlackObserver::<ReqwestClient>::new(&c)));
+                }
+            }
+        }
+        Ok(result)
+    }
+}
+
+pub struct MqttProvider {}
+impl<'a> DuckProvider<'a> for MqttProvider {
     fn get_observers(&self, config: &Configuration) -> DuckResult<Vec<Box<dyn Observer>>> {
         let mut result = Vec::<Box<dyn Observer>>::new();
         if let Some(observers) = &config.observers {
