@@ -400,10 +400,18 @@ pub struct MQTTConfiguration {
     pub broker: MQTTBrokerEndpoint,
     /// # The name of the topic to publish to
     pub topic: String,
+    /// # Broker credentials
+    pub credentials: MQTTCredentials,
 }
 
 #[derive(Serialize, Deserialize, JsonSchema, Clone)]
 pub struct MQTTBrokerEndpoint {
     pub hostname: String,
     pub port: u16,
+}
+
+#[derive(Serialize, Deserialize, JsonSchema, Clone)]
+pub struct MQTTCredentials {
+    pub username: String,
+    pub password: String,
 }

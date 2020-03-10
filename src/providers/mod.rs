@@ -31,6 +31,7 @@ impl<'a> DuckProviderCollection<'a> {
         providers.push(&HueProvider {});
         providers.push(&SlackProvider {});
         providers.push(&MattermostProvider {});
+        providers.push(&MqttProvider {});
 
         DuckProviderCollection { providers }
     }

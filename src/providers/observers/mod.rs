@@ -28,6 +28,7 @@ pub struct ObserverInfo {
     pub collectors: Option<HashSet<String>>,
 }
 
+#[derive(Debug)]
 pub enum Observation<'a> {
     DuckStatusChanged(BuildStatus),
     BuildUpdated(&'a Build),
